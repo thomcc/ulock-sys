@@ -3,12 +3,20 @@ name = "ulock-sys"
 version = "0.1.0"
 authors = ["Thom Chiovoloni <chiovolonit@gmail.com>"]
 edition = "2018"
+description = "Rust bindings for Darwin's (e.g. macOS, iOS, ...) not-entirely-public ulock API, which provides futex-like functionality."
+license = "Apache-2.0 OR Zlib OR MIT"
+readme = "README.md"
+keywords = ["ulock", "__ulock_wait", "__ulock_wake", "futex", "macos"]
+categories = ["concurrency", "api-bindings"]
+repository = "https://github.com/thomcc/ulock-sys"
+documentation = "https://docs.rs/ulock-sys"
+homepage = "https://github.com/thomcc/ulock-sys"
 
 [features]
 # emulate weak linking using dlsym. NB: this is experimental and may have bugs.
 experimental-weak = []
-
 # emulate weak linking, even on arm macos (which should always have the API).
+# Does nothing if `experimental-weak` is off.
 weak-aarch64-macos = []
 
 [dependencies]
@@ -16,6 +24,4 @@ cty = "0.2"
 
 [package.metadata.docs.rs]
 features = ["experimental-weak"]
-all-features = false
-no-default-features = true
 default-target = "x86_64-apple-darwin"

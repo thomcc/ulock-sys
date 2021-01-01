@@ -19,4 +19,3 @@ That said, they're not public, and who knows the future, maybe Apple will remove
 As a result of that (and so that you can support older versions), if you enable the `experimental-weak` feature, we'll expose a module `weak` which emulates weak linking and accesses the function via `dlsym`.
 
 Note that on aarch64 darwin (e.g. "apple silicon", the ARM64 macbooks and such) by default we don't `dlsym` even if the "experimental-weak" feature is on unless "weak-aarch64-macos" is also specified. This is because all OSes on these machines support the API. This can be overridden by enabling the `weak-aarch64-macos` feature.
-
