@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+env:
+  RUST_BACKTRACE: 1
+  RUSTFLAGS: "-D warnings"
+  RUSTDOCFLAGS: "-D warnings"
+
+jobs:
+  test:
+    name: Check Rust ${{ matrix.rust }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: stable
+      - run: cargo test --verbose
+      - run: cargo test --verbose --features=experimental-weak
+      - run: cargo test --verbose --features=all-features
+
+  check:
+    name: Check on ${{ matrix.targ }}
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targ:
+          - x86_64-apple-darwin
+          - aarch64-apple-darwin
+          - x86_64-apple-ios
+          - aarch64-apple-ios
+          - x86_64-apple-ios-macabi
+          # TODO aarch64-apple-ios-macabi
+          # todo: *-apple-tvos
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: nightly
+      - run: rustup target add ${{ matrix.targ }}
+      - run: cargo check --target ${{ matrix.targ }}
+      - run: cargo check --target ${{ matrix.targ }} --features="experimental-weak"
+      - run: cargo check --target ${{ matrix.targ }} --all-features
+
+  rustfmt:
+    name: Verify code formatting
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          components: rustfmt
+      - run: cargo fmt --all -- --check
+
+  check-rustdoc-links:
+    name: Check intra-doc links
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: nightly
+      - run: cargo rustdoc --all-features -- -D warnings
